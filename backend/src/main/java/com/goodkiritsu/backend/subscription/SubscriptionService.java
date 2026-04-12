@@ -7,28 +7,28 @@ import java.util.List;
 
 @Service
 public class SubscriptionService {
+    private SubscriptionRepository subscriptionRepo;
 
-    private List<Subscription> subs = new ArrayList<>(List.of(
-            new Subscription(1L, "Netflix", 15.99, "Entertainment", "Monthly"),
-            new Subscription(2L, "Spotify", 9.99, "Entertainment", "Monthly"),
-            new Subscription(3L, "AWS", 50.00, "Cloud Services", "Monthly")
-    ));
+    public  SubscriptionService(SubscriptionRepository subscriptionRepository) {
+        this.subscriptionRepo = subscriptionRepository;
+    }
 
     public List<Subscription> getAllSubscriptions() {
+        List<Subscription> subs = subscriptionRepo.findAll();
         return subs;
     }
 
     public void addSubscription(Subscription sub) {
-        sub.setId((long) (subs.size() + 1));
-        subs.add(sub);
+        subscriptionRepo.save(sub);
     }
 
     public void deleteSubscription(Long id) {
-        subs.removeIf(sub -> sub.getId().equals(id));
+        subscriptionRepo.deleteById(id);
     }
 
     public Double getMonthlyTotal() {
         Double sum = 0D;
+        List<Subscription> subs = getAllSubscriptions();
         for (Subscription sub : subs) {
             sum += sub.getCost();
         }
