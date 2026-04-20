@@ -1,9 +1,7 @@
 package com.goodkiritsu.backend.subscription;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.goodkiritsu.backend.Security.User;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -24,6 +22,9 @@ public class Subscription {
     public void save(Subscription sub) {
         
     }
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }
 
 
