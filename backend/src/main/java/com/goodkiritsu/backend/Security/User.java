@@ -1,4 +1,5 @@
 package com.goodkiritsu.backend.Security;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.goodkiritsu.backend.subscription.Subscription;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,8 +22,10 @@ public class User implements UserDetails{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private String username;
+
+    @JsonIgnore
     private String password;
     private String email;
 
