@@ -10,7 +10,10 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const handleLogin = async () => {
-    if (!username || !password) {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
@@ -20,7 +23,7 @@ export default function LoginScreen() {
       const response = await fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: trimmedUsername, password: trimmedPassword }),
       });
 
       if (!response.ok) {
@@ -31,7 +34,7 @@ export default function LoginScreen() {
 
       const data = await response.json();
       await AsyncStorage.setItem("authToken", data.token);
-      router.replace("/(tabs)" as any);
+      router.replace("/(home)");
     } catch (error) {
       Alert.alert("Error", "Cannot connect to server");
     } finally {
