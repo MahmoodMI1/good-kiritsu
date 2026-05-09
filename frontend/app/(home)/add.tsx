@@ -24,7 +24,7 @@ export default function AddSubscriptionScreen() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, price: parseFloat(price) }),
+        body: JSON.stringify({ name, cost: parseFloat(price) }),
       });
 
       if (response.ok) {

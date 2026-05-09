@@ -8,7 +8,7 @@ const API_URL = "http://localhost:8080";
 interface Subscription {
   id: number;
   name: string;
-  price: number;
+  cost: number;
 }
 
 export default function HomeScreen() {
@@ -76,7 +76,7 @@ export default function HomeScreen() {
     <View style={styles.card}>
       <View style={styles.cardInfo}>
         <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>${item.price}/mo</Text>
+        <Text style={styles.price}>${item.cost}/mo</Text>
       </View>
       <TouchableOpacity onPress={() => handleDelete(item.id)}>
         <Text style={styles.delete}>Delete</Text>
