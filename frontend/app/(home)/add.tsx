@@ -18,6 +18,7 @@ export default function AddSubscriptionScreen() {
 
     try {
       const token = await AsyncStorage.getItem("authToken");
+      console.log("Token being sent:", token);
       const response = await fetch(`${API_URL}/api/subscriptions`, {
         method: "POST",
         headers: {
@@ -28,7 +29,7 @@ export default function AddSubscriptionScreen() {
       });
 
       if (response.ok) {
-        router.back();
+        router.replace("/(home)");
       } else {
         Alert.alert("Error", "Failed to add subscription");
       }
