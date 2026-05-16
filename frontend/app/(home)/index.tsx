@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { useCallback, useState } from "react";
+import { View, FlatList, StyleSheet, Alert } from "react-native";
+import { Text, Card, IconButton, FAB, Appbar, Surface } from "react-native-paper";
 import { useRouter, useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -9,6 +10,8 @@ interface Subscription {
   id: number;
   name: string;
   cost: number;
+  category?: string;
+  billingCycle?: string;
 }
 
 export default function HomeScreen() {
@@ -19,7 +22,6 @@ export default function HomeScreen() {
   const fetchData = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");
-
       const [subsRes, totalRes] = await Promise.all([
         fetch(`${API_URL}/api/subscriptions`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -34,20 +36,14 @@ export default function HomeScreen() {
         return;
       }
 
-      const subsData = await subsRes.json();
-      const totalData = await totalRes.json();
-      setSubscriptions(subsData);
-      setTotal(totalData);
-    } catch (error) {
+      setSubscriptions(await subsRes.json());
+      setTotal(await totalRes.json());
+    } catch {
       Alert.alert("Error", "Cannot connect to server");
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  useFocusEffect(useCallback(() => { fetchData(); }, []));
 
   const handleDelete = async (id: number) => {
     try {
@@ -56,72 +52,94 @@ export default function HomeScreen() {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (response.ok) {
-        fetchData();
-      } else {
-        Alert.alert("Error", "Failed to delete");
-      }
-    } catch (error) {
+      if (response.ok) fetchData();
+      else Alert.alert("Error", "Failed to delete");
+    } catch {
       Alert.alert("Error", "Cannot connect to server");
     }
   };
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("authToken");
-    router.replace("/login");
+    router.replace("/(auth)/login");
   };
-
-  const renderItem = ({ item }: { item: Subscription }) => (
-    <View style={styles.card}>
-      <View style={styles.cardInfo}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>${item.cost}/mo</Text>
-      </View>
-      <TouchableOpacity onPress={() => handleDelete(item.id)}>
-        <Text style={styles.delete}>Delete</Text>
-      </TouchableOpacity>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push("/about")}>
-          <Text style={styles.headerLink}>About</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleLogout}>
-          <Text style={styles.headerLink}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+      <Appbar.Header style={styles.appbar}>
+        <Appbar.Content title="My Subscriptions" titleStyle={styles.appbarTitle} />
+        <Appbar.Action icon="information-outline" onPress={() => router.push("/about")} iconColor="#F5F5F5" />
+        <Appbar.Action icon="logout" onPress={handleLogout} iconColor="#F5F5F5" />
+      </Appbar.Header>
 
-      <Text style={styles.total}>Monthly Total: ${total.toFixed(2)}</Text>
+      <Surface style={styles.totalCard} elevation={0}>
+        <Text style={styles.totalLabel}>Monthly Total</Text>
+        <Text style={styles.totalAmount}>${total.toFixed(2)}</Text>
+      </Surface>
 
       <FlatList
         data={subscriptions}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        ListEmptyComponent={<Text style={styles.empty}>No subscriptions yet</Text>}
+        contentContainerStyle={styles.list}
+        renderItem={({ item }) => (
+          <Card style={styles.card}>
+            <Card.Content style={styles.cardContent}>
+              <View style={styles.cardLeft}>
+                <Text style={styles.cardName}>{item.name}</Text>
+                {item.category ? (
+                  <Text style={styles.cardCategory}>{item.category}</Text>
+                ) : null}
+              </View>
+              <View style={styles.cardRight}>
+                <Text style={styles.cardPrice}>${item.cost.toFixed(2)}/mo</Text>
+                <IconButton
+                  icon="trash-can-outline"
+                  iconColor="#FF453A"
+                  size={20}
+                  onPress={() => handleDelete(item.id)}
+                  style={styles.deleteButton}
+                />
+              </View>
+            </Card.Content>
+          </Card>
+        )}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No subscriptions yet. Tap + to add one.</Text>
+        }
       />
 
-      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/add")}>
-        <Text style={styles.addButtonText}>+ Add Subscription</Text>
-      </TouchableOpacity>
+      <FAB
+        icon="plus"
+        style={styles.fab}
+        onPress={() => router.push("/add")}
+        color="#000000"
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, paddingTop: 8 },
-  header: { flexDirection: "row", justifyContent: "space-between", marginBottom: 16 },
-  headerLink: { color: "#007AFF", fontSize: 16 },
-  total: { fontSize: 22, fontWeight: "bold", marginBottom: 16, textAlign: "center" },
-  card: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", padding: 16, backgroundColor: "#f9f9f9", borderRadius: 8, marginBottom: 8 },
-  cardInfo: { flex: 1 },
-  name: { fontSize: 16, fontWeight: "600" },
-  price: { fontSize: 14, color: "#666", marginTop: 4 },
-  delete: { color: "#FF3B30", fontSize: 14, fontWeight: "600" },
-  empty: { textAlign: "center", color: "#999", marginTop: 32, fontSize: 16 },
-  addButton: { backgroundColor: "#007AFF", padding: 16, borderRadius: 8, alignItems: "center", marginTop: 16 },
-  addButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  container: { flex: 1, backgroundColor: "#0D0D0D" },
+  appbar: { backgroundColor: "#0D0D0D" },
+  appbarTitle: { color: "#F5F5F5", fontWeight: "bold" },
+  totalCard: {
+    margin: 16,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: "#1A1A1A",
+    alignItems: "center",
+  },
+  totalLabel: { color: "#888888", fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 },
+  totalAmount: { color: "#00C853", fontSize: 40, fontWeight: "bold" },
+  list: { paddingHorizontal: 16, paddingBottom: 100 },
+  card: { marginBottom: 10, backgroundColor: "#1A1A1A" },
+  cardContent: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 4 },
+  cardLeft: { flex: 1 },
+  cardName: { color: "#F5F5F5", fontSize: 16, fontWeight: "600" },
+  cardCategory: { color: "#888888", fontSize: 13, marginTop: 2, textTransform: "capitalize" },
+  cardRight: { flexDirection: "row", alignItems: "center" },
+  cardPrice: { color: "#00C853", fontSize: 15, fontWeight: "600" },
+  deleteButton: { margin: 0, marginLeft: 4 },
+  empty: { color: "#888888", textAlign: "center", marginTop: 48, fontSize: 15 },
+  fab: { position: "absolute", right: 20, bottom: 28, backgroundColor: "#00C853" },
 });
