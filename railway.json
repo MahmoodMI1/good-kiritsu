@@ -5,7 +5,6 @@
     "buildCommand": "cd backend && ./mvnw clean package -DskipTests"
   },
   "deploy": {
-    "startCommand": "java -jar backend/target/*.jar",
-    "healthcheckPath": "/api/health"
+    "startCommand": "java -jar backend/target/*.jar"
   }
 }
