@@ -19,9 +19,6 @@ public class Subscription {
     private String category;
     private String billingCycle;
 
-    public void save(Subscription sub) {
-        
-    }
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

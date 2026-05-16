@@ -9,6 +9,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api/subscriptions")
+@CrossOrigin(origins = "*")
 public class SubscriptionController {
     //Injection of service
     private final SubscriptionService subscriptionService;
