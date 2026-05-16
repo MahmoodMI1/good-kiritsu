@@ -3,8 +3,7 @@ import { View, FlatList, StyleSheet, Alert } from "react-native";
 import { Text, Card, IconButton, FAB, Appbar, Surface } from "react-native-paper";
 import { useRouter, useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const API_URL = "http://localhost:8080";
+import { API_URL } from "@/constants/api";
 
 interface Subscription {
   id: number;

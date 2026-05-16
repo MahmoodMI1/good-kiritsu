@@ -3,8 +3,7 @@ import { View, StyleSheet, ScrollView } from "react-native";
 import { TextInput, Button, Text, SegmentedButtons, Appbar } from "react-native-paper";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-const API_URL = "http://localhost:8080";
+import { API_URL } from "@/constants/api";
 
 export default function AddSubscriptionScreen() {
   const [name, setName] = useState("");

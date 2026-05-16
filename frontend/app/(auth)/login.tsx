@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "@/constants/api";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -23,7 +24,7 @@ export default function LoginScreen() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: trimmedUsername, password: trimmedPassword }),

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Text } from "react-native-paper";
 import { useRouter } from "expo-router";
+import { API_URL } from "@/constants/api";
 
 export default function RegisterScreen() {
   const [username, setUsername] = useState("");
@@ -20,7 +21,7 @@ export default function RegisterScreen() {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:8080/api/auth/register", {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
