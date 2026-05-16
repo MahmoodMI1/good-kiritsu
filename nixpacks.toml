@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["cd backend && ./mvnw clean package -DskipTests"]
+
+[start]
+cmd = "java -jar backend/target/*.jar"
