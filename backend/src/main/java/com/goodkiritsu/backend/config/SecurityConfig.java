@@ -43,8 +43,9 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-                    auth.requestMatchers("/api/auth/register", "/api/auth/login").permitAll();
-                    auth.requestMatchers("/api/health").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/api/health").permitAll();
                     auth.requestMatchers("/api/subscriptions/**").authenticated();
                     auth.anyRequest().denyAll();
                 })
